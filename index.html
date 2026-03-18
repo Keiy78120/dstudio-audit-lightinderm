@@ -77,11 +77,19 @@ body{background:#000;color:#fff;font-family:'Inter',system-ui,sans-serif;}
   .orb{display:none!important;}
   .price-big{font-size:24px!important;}
 }
+
+/* CRITICAL: force dark background over Reveal reset.css */
+html, body { background: #000 !important; color: #fff !important; }
+.reveal-viewport { background: #000 !important; }
+canvas#bg { position:fixed;inset:0;z-index:0;opacity:0.35;pointer-events:none; }
+.reveal .slides { position:relative;z-index:1; }
+
 </style>
 </head>
 <body>
 <a class="back-btn" href="https://keiy78120.github.io/dstudio-audits/">← Audits</a>
 
+<canvas id="bg"></canvas>
 <div class="reveal">
 <div class="slides">
 
@@ -305,6 +313,19 @@ body{background:#000;color:#fff;font-family:'Inter',system-ui,sans-serif;}
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
 <script>
 lucide.createIcons();
+
+/* Stars background */
+(function(){
+  var c=document.getElementById('bg');
+  if(!c){c=document.createElement('canvas');c.id='bg';document.body.prepend(c);}
+  var ctx=c.getContext('2d');var W,H,stars=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  function Star(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*.7+.15;this.a=Math.random()*.4+.08;this.spd=Math.random()*.012+.003;}
+  function init(){resize();stars=Array.from({length:160},function(){return new Star();});}
+  function draw(){ctx.clearRect(0,0,W,H);stars.forEach(function(s){s.a+=s.spd;if(s.a>.55||s.a<.08)s.spd*=-1;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+s.a+')';ctx.fill();});requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);init();draw();
+})();
+
 if(window.innerWidth<=768){
   document.querySelector('.reveal').style.cssText='display:block;overflow-y:auto;height:auto;';
   document.querySelector('.reveal .slides').style.cssText='display:block;width:100%;height:auto;transform:none;';
